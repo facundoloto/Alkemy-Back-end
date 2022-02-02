@@ -4,21 +4,18 @@ const array=[]
 try {
 //userID and categoryID are the id of table user and category it use as foreign key
 //function to show all the amount of entry/egress and do a balance with them
-console.log(param.params.userID)
-const getEntry=await Querys.records(`SELECT amount FROM records INNER JOIN user ON records.userID="${param.params.userID}" WHERE type="entry"`)
+const getEntry=await Querys.records(`SELECT amount FROM records INNER JOIN user ON records.userID=user.id WHERE type="entry" and records.userID="${param.params.userID}"`)
 const getEgress=await Querys.records(`SELECT amount FROM records INNER JOIN user ON records.userID =user.id WHERE type="egress" and records.userID="${param.params.userID}"`)
-console.log(getEntry)
-console.log(getEgress)
 let totalEntry=0
 let totalEgress=0
 if(getEntry.length!=0){
   getEntry.map(function(data){
-    totalEntry=+data.amount
+    totalEntry+=data.amount
   })
 }
 if(getEgress.length!=0){
   getEgress.map(function(data){
-    totalEgress=+data.amount
+    totalEgress+=data.amount
   })
 }
 
