@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+
 const {
   OK,
   ACCEPTED,
@@ -9,6 +10,7 @@ const db = require('../../models');
 
 const addRecord = async (req, res) => {
   const { categoriesId, typeId, amount, concept, date, userId } = req.body;
+
   try {
     const newRecord = await db.Records.create({
       concept,
@@ -30,22 +32,102 @@ const addRecord = async (req, res) => {
       msg: 'Error creating contact.',
       error: errors,
     });
+  };
+};
+
+const updateRecord = async (req, res) => {
+  const { concept, amount, categoriesId, typeId } = req.body;
+  const { id } = req.params;
+  try {
+    const record = await db.Records.findOne({
+      where: { id },
+    });
+    if (!record) {
+      return res.status(HTTP_CODES.NOT_FOUND).json({
+        msg: `No se encontro el registro con ID: ${id}`,
+      });
+    }
+
+    const recordUpdated = await db.Records.update(
+      {
+        concept,
+        typeId,
+        amount,
+        categoriesId,
+      },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+    if (!recordUpdated) {
+      return res
+        .status(HTTP_CODES.NOT_FOUND)
+        .send('it can not be updated');
+    }
+    res.status(HTTP_CODES.OK).send('record updated');
+  } catch (error) {
+    res
+      .status(HTTP_CODES.BAD_REQUEST)
+      .send({ msg: 'it happend an error ' });
   }
 };
 
-const getAllRecords = async (req, res, next) => {
+async function deleteNews(req, res) {
+  const { id } = req.params;
+
   try {
-    const record = await db.Records.findAll();
+    const deleted = await db.Records.destroy({ where: { id } });
+    if (!deleted) {
+      return res.status(HTTP_CODES.BAD_REQUEST).json({
+        error: 'record not deleted',
+      });
+    }
+    return res.status(HTTP_CODES.OK).json({
+      ok: true,
+    });
+  } catch (err) {
+    return res.status(HTTP_CODES.BAD_REQUEST).json({
+      error: 'record not deleted',
+    });
+  }
+}
+
+const getAllRecords = async (req, res, next) => {
+
+  try {
+    const record = await db.Records.findAll(
+      {
+        include: [
+          {
+            association: 'type',
+            attributes: ['name']
+          },
+          {
+            association: 'categories',
+            attributes: ['name']
+          },
+          {
+            association: 'user',
+            attributes: ['name']
+          }
+        ]
+      }
+    );
+
     res.status(ACCEPTED).json({
       ok: true,
       msg: 'Succesful request',
       result: record,
     });
-  } catch (error) {
+
+  }
+  catch (error) {
     res
       .status(INTERNAL_SERVER_ERROR)
       .json({ ok: false, msg: 'internal server error', error });
-  }
+  };
 };
 
-module.exports = { getAllRecords, addRecord };
+module.exports = { getAllRecords, addRecord, updateRecord, deleteNews };

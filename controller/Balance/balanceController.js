@@ -1,4 +1,4 @@
-let Querys=require("../database/querys.js")
+/*let Querys=require("../database/querys.js")
 exports.balance=async(param,res)=>{
 const array=[]
 try {
@@ -51,3 +51,58 @@ res.status(204);
 res.send('there is an error,please try again');
 }
 }
+*/
+const { validationResult } = require('express-validator');
+
+const {
+  OK,
+  ACCEPTED,
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+} = require('../../constants/httpCodes');
+const db = require('../../models');
+
+const getBalance = async (req, res) => {
+  let result={}
+  try {
+    const entry = await db.Records.findAll({
+      attributes: ['amount'],
+      where: {
+        typeId: 1,
+        userId: `${req.params.id}`,
+      },
+    });
+
+    const egress = await db.Records.findAll({
+      attributes: ['amount'],
+      where: {
+        typeId: 2,
+        userId: `${req.params.id}`,
+      },
+    });
+  if(entry.length!==0 && egress.length!==0){
+  result={'entry':entry} 
+  }
+  else{
+ result={
+  'entry': entry,
+  'egress': egress,
+ }
+}
+    res.status(OK).json({
+      ok: true,
+      msg: 'Success',
+      balance: result,
+    });
+  } catch (errors) {
+    console.log(errors)
+    return res.status(INTERNAL_SERVER_ERROR).json({
+      ok: false,
+      msg: 'Error',
+      error: errors,
+    });
+  };
+};
+
+
+module.exports = { getBalance, };

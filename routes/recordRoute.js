@@ -6,7 +6,7 @@ const {
 } = require('../controller/Records/recordController');
 
 /* GET users listing. */
-router.post('/',getAllRecords);
+router.get('/',getAllRecords);
 router.post('/add',addRecord);
 //router.delete('/:id', deleteUser);
 

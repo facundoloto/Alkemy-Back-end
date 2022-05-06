@@ -10,8 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Type.hasOne(Record, { as: "record", foreignKey: "typeId" });
-      Records.belongsTo(Type, { as: "type", foreignKey: "typeId" })
+      Records.belongsTo(models.Categories, { as: "categories", foreignKey: "categoriesId" })
+      Records.belongsTo(models.User, { as: "user", foreignKey: "userId" })
+      Records.belongsTo(models.Type, { as: "type", foreignKey: "typeId" })
     }
   }
   Records.init(
@@ -20,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       typeId: DataTypes.STRING,
       amount: DataTypes.FLOAT,
       date: DataTypes.DATE,
-      categoryId: DataTypes.INTEGER,
+      categoriesId: DataTypes.INTEGER,
       userId: DataTypes.INTEGER,
     },
     {
