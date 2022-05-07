@@ -7,7 +7,6 @@ const {
 const db = require('../../models');
 
 const getAllType = async (req, res, next) => {
-
     try {
         const results = await db.Type.findAll();
 
@@ -16,7 +15,6 @@ const getAllType = async (req, res, next) => {
             msg: 'Succesful request',
             result: results,
         });
-
     }
     catch (error) {
         res
