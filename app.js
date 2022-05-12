@@ -1,3 +1,4 @@
+const validator = require('express-validator');
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -37,7 +38,7 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   //res.render('error');
-  console.log('error')
+  console.log(err)
 });
-app.listen("8000",()=>{})
+app.listen("3080",()=>{})
 module.exports = app;

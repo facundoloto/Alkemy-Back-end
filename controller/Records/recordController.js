@@ -74,7 +74,7 @@ const updateRecord = async (req, res) => {
   }
 };
 
-async function deleteNews(req, res) {
+async function deleteRecord(req, res) {
   const { id } = req.params;
 
   try {
@@ -95,10 +95,13 @@ async function deleteNews(req, res) {
 }
 
 const getAllRecords = async (req, res, next) => {
-
+console.log(req.params.id)
   try {
     const record = await db.Records.findAll(
       {
+        where: {
+          userId: `${req.params.id}`,
+        }, 
         include: [
           {
             association: 'type',
@@ -124,10 +127,11 @@ const getAllRecords = async (req, res, next) => {
 
   }
   catch (error) {
+    console.log(error);
     res
       .status(INTERNAL_SERVER_ERROR)
       .json({ ok: false, msg: 'internal server error', error });
   };
 };
 
-module.exports = { getAllRecords, addRecord, updateRecord, deleteNews };
+module.exports = { getAllRecords, addRecord, updateRecord, deleteRecord };
