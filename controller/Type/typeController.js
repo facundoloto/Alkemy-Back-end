@@ -23,4 +23,28 @@ const getAllType = async (req, res, next) => {
     };
 };
 
-module.exports = { getAllType };
+const getIdType = async (req, res, next) => {
+
+    try {
+      const results = await db.Type.findAll({
+        where: {
+          id: `${req.params.id}`
+        }
+      }
+      );
+  
+      res.status(ACCEPTED).json({
+        ok: true,
+        msg: 'Succesful request',
+        result: results,
+      });
+  
+    }
+    catch (error) {
+      res
+        .status(INTERNAL_SERVER_ERROR)
+        .json({ ok: false, msg: 'internal server error', error });
+    };
+  };
+
+module.exports = { getAllType, getIdType };
