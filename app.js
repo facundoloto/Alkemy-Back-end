@@ -5,7 +5,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 require('dotenv').config();
-
 const usersRouter = require('./routes/users');
 const balanceRouter = require('./routes/balanceRoute');
 const recordsRouter = require('./routes/recordRoute');
@@ -40,5 +39,7 @@ app.use(function (err, req, res, next) {
   //res.render('error');
   console.log(err)
 });
-
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running on port ${process.env.PORT}`);
+});
 module.exports = app;
