@@ -11,6 +11,7 @@ const recordsRouter = require('./routes/recordRoute');
 const typeRouter = require('./routes/typeRoute');
 const categoriesRouter = require('./routes/categoriesRoute');
 const app = express();
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -28,6 +29,10 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
+app.use(function (req, res, next) {
+  app.send("hello")
+});
+
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
@@ -38,6 +43,10 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   //res.render('error');
   console.log(err)
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = app;
