@@ -18,6 +18,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'views')));
+
+app.get("/", (req, res) => {
+  res.render("index", { titulo: "inicio" });
+});
 
 app.use('/auth', usersRouter);
 app.use('/balance', balanceRouter);
