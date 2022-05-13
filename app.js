@@ -40,5 +40,5 @@ app.use(function (err, req, res, next) {
   //res.render('error');
   console.log(err)
 });
-app.listen("3080",()=>{})
+
 module.exports = app;
