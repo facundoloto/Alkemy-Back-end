@@ -95,7 +95,7 @@ async function deleteRecord(req, res) {
 }
 
 const getAllRecords = async (req, res, next) => {
-console.log(req.params.id)
+
   try {
     const record = await db.Records.findAll(
       {
