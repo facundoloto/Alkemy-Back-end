@@ -3,16 +3,16 @@ const {
   ACCEPTED,
   BAD_REQUEST,
   INTERNAL_SERVER_ERROR,
-} = require('../../constants/httpCodes');
-const db = require('../../models');
+} = require("../../constants/httpCodes");
+const db = require("../../models");
 
 const getBalance = async (req, res) => {
-  let totalEntry=0;
-  let totalEgress=0;
+  let totalEntry = 0;
+  let totalEgress = 0;
 
   try {
     const entry = await db.Records.findAll({
-      attributes: ['amount'],
+      attributes: ["amount"],
       where: {
         typeId: 1,
         userId: `${req.params.id}`,
@@ -20,149 +20,104 @@ const getBalance = async (req, res) => {
     });
 
     const egress = await db.Records.findAll({
-      attributes: ['amount'],
+      attributes: ["amount"],
       where: {
         typeId: 2,
         userId: `${req.params.id}`,
       },
     });
 
-    if(entry.length!=0){
-      entry.map(function(data){
-        totalEntry+=data.amount
-      })
+    if (entry.length != 0) {
+      entry.map(function (data) {
+        totalEntry += data.amount;
+      });
     }
-    if(egress.length!=0){
-      egress.map(function(data){
-        totalEgress+=data.amount
-      })
+
+    if (egress.length != 0) {
+      egress.map(function (data) {
+        totalEgress += data.amount;
+      });
     }
-    
-    let amount=totalEntry-totalEgress
-    const result={
-          "entry":`${totalEntry}`,
-          "egress": `${totalEgress}`,
-          "balance":`${amount}`
-        };
-          
-        
-    
+
+    let amount = totalEntry - totalEgress;
+
+    const result = {
+      entry: `${totalEntry}`,
+      egress: `${totalEgress}`,
+      balance: `${amount}`,
+    };
+
     res.status(OK).json({
       ok: true,
-      msg: 'Success',
+      msg: "Success",
       balance: result,
     });
+
   } catch (errors) {
     return res.status(INTERNAL_SERVER_ERROR).json({
       ok: false,
-      msg: 'Error',
-      error: errors,
-    });
-  };
-};
-
-const getBalanceDate=  async (req, res) => {
-/*  let totalEntry=0;
-  let dateArray=[];
-  try {
-  
-  req.body.date.map(async function(date){
-
-    const entry = await db.Records.findAll({
-        attributes: ['amount'],
-        where: {
-         userId: `${req.body.id}` ,
-          typeId: 1,
-          date:`${date.date}`
-        },
-      });
-
-      if(entry.length!=0){
-
-        entry.map(function(data){
-          totalEntry+=data.amount
-          dateArray.push({ "date": date.date, "balance": {totalEntry}});
-        })
-      }
-  
-  })
-
-   res.status(OK).json({
-    ok: true,
-    msg: 'Success',
-    balanceDate:dateArray,
-  });
-
-
-}    catch (errors) {
-    console.log(errors)
-    return res.status(INTERNAL_SERVER_ERROR).json({
-      ok: false,
-      msg: 'Error',
+      msg: "Error",
       error: errors,
     });
   }
-  */
-}
+};
 
+const getDate = async (req, res) => {
+  let arr = [];
 
-const getDate= async (req, res) => {
-  let arr=[];
   try {
-   
     const dates = await db.Records.findAll({
-      attributes: ['date'],
+      attributes: ["date"],
       where: {
-       userId: `${req.params.id}` ,
+        userId: `${req.params.id}`,
       },
     });
 
-let result = dates.filter((item,index)=>{ //filtra fechas repetidas
-  return dates.indexOf(item)===index;
-})
-
- result.map(async (item)=>{
-  let totalEntry=0;
-
-  const entry = await db.Records.findAll({
-    attributes: ['amount'],
-    where: {
-     userId: `${req.params.id}` ,
-      typeId: 1,
-      date:`${item.date}`
-    },
-  });
-
-  if(entry.length!=0){
-
-   await entry.map(  function(data){
-      totalEntry+=data.amount
-      let date={ "date": item.date, "balance": totalEntry}
-      arr.push(date);
-      console.log(arr)
-    })
-  }
-}
-  )
-
-  setTimeout(function(){
-    res.status(OK).json({
-      ok: true,
-      msg: 'Success',
-      balanceDate:arr,
+    let result = dates.filter((item, index) => {
+      //filtra fechas repetidas
+      return dates.indexOf(item) === index;
     });
-}, 2200);
 
+    result.map(async (item) => {
+      let totalEntry = 0;
 
+      const entry = await db.Records.findAll({
+        attributes: ["amount"],
+        where: {
+          userId: `${req.params.id}`,
+          typeId: 1,
+          date: `${item.date}`,
+        },
+      });
+
+      if (entry.length != 0) {
+        await entry.map(function (data) {
+          totalEntry += data.amount;
+          let date = { date: item.date, balance: totalEntry };
+          arr.push(date);
+          console.log(arr);
+        });
+      }
+    });
+
+    setTimeout(function () {
+      res.status(OK).json({
+        ok: true,
+        msg: "Success",
+        balanceDate: arr,
+      });
+    }, 2200);
 
   } catch (errors) {
-    console.log(errors)
+
+    console.log(errors);
     return res.status(INTERNAL_SERVER_ERROR).json({
       ok: false,
-      msg: 'Error',
+      msg: "Error",
       error: errors,
     });
-  };
+
+  }
 };
 
-module.exports = { getBalance, getDate, getBalanceDate };
+module.exports = { getBalance, getDate };
