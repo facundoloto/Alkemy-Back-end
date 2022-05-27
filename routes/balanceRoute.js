@@ -8,6 +8,6 @@ getDate,
 
 /* GET users listing. */
 router.get('/:id',getBalance);
-router.post('/date',getBalanceDate);
+router.post('/date/',getBalanceDate);
 router.get('/date/:id',getDate);
 module.exports = router;

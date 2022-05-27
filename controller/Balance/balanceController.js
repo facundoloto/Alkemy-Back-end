@@ -61,58 +61,100 @@ const getBalance = async (req, res) => {
   };
 };
 
-const getBalanceDate= async (req, res) => {
-  let totalEntry=0;
-  console.log(req.body.date)
+const getBalanceDate=  async (req, res) => {
+/*  let totalEntry=0;
+  let dateArray=[];
   try {
-    const entry = await db.Records.findAll({
-      attributes: ['amount'],
-      where: {
-       userId: `${req.body.id}` ,
-        typeId: 1,
-        date:`${req.body.date}`
-      },
-    });
-console.log(entry)
-    if(entry.length!=0){
-      entry.map(function(data){
-        totalEntry+=data.amount
-      })
-    }
+  
+  req.body.date.map(async function(date){
 
-    const data={
-          "entry":`${totalEntry}`,
-        };
-          
-    res.status(OK).json({
-      ok: true,
-      msg: 'Success',
-      balanceDate: data,
-    });
-  } catch (errors) {
+    const entry = await db.Records.findAll({
+        attributes: ['amount'],
+        where: {
+         userId: `${req.body.id}` ,
+          typeId: 1,
+          date:`${date.date}`
+        },
+      });
+
+      if(entry.length!=0){
+
+        entry.map(function(data){
+          totalEntry+=data.amount
+          dateArray.push({ "date": date.date, "balance": {totalEntry}});
+        })
+      }
+  
+  })
+
+   res.status(OK).json({
+    ok: true,
+    msg: 'Success',
+    balanceDate:dateArray,
+  });
+
+
+}    catch (errors) {
     console.log(errors)
     return res.status(INTERNAL_SERVER_ERROR).json({
       ok: false,
       msg: 'Error',
       error: errors,
     });
-  };
-};
+  }
+  */
+}
+
 
 const getDate= async (req, res) => {
+  let arr=[];
   try {
+   
     const dates = await db.Records.findAll({
       attributes: ['date'],
       where: {
        userId: `${req.params.id}` ,
       },
     });
-          
+
+let result = dates.filter((item,index)=>{ //filtra fechas repetidas
+  return dates.indexOf(item)===index;
+})
+
+ result.map(async (item)=>{
+  let totalEntry=0;
+
+  const entry = await db.Records.findAll({
+    attributes: ['amount'],
+    where: {
+     userId: `${req.params.id}` ,
+      typeId: 1,
+      date:`${item.date}`
+    },
+  });
+
+  if(entry.length!=0){
+
+   await entry.map(  function(data){
+      totalEntry+=data.amount
+      let date={ "date": item.date, "balance": totalEntry}
+      arr.push(date);
+      console.log(arr)
+    })
+  }
+}
+  )
+
+  setTimeout(function(){
     res.status(OK).json({
       ok: true,
       msg: 'Success',
-      results: dates,
+      balanceDate:arr,
     });
+}, 2200);
+
+
+
   } catch (errors) {
     console.log(errors)
     return res.status(INTERNAL_SERVER_ERROR).json({
